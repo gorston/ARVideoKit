@@ -95,11 +95,11 @@ struct RenderAR {
             var renderedFrame: UIImage?
 
             pixelsQueue.sync {
-                renderedFrame = renderEngine.snapshot(atTime: self.time, with: CGSize(width: size.height, height: size.width), antialiasingMode: .none).rotate(by: 90)
+                renderedFrame = renderEngine.snapshot(atTime: self.time, with: CGSize(width: size.height, height: size.width), antialiasingMode: .none)
             }
             if let _ = renderedFrame {
             } else {
-                renderedFrame = renderEngine.snapshot(atTime: time, with: CGSize(width: size.height, height: size.width), antialiasingMode: .none).rotate(by: 90)
+                renderedFrame = renderEngine.snapshot(atTime: time, with: CGSize(width: size.height, height: size.width), antialiasingMode: .none)
             }
             guard let buffer = renderedFrame!.buffer else { return nil }
             return buffer
