@@ -266,7 +266,7 @@ extension SCNViewController {
 //MARK: - ARVideoKit Delegate Methods
 extension SCNViewController {
     func frame(didRender buffer: CVPixelBuffer, with time: CMTime, using rawBuffer: CVPixelBuffer) {
-        // Do some image/video processing.
+     print(buffer)
     }
     
     func recorder(didEndRecording path: URL, with noError: Bool) {

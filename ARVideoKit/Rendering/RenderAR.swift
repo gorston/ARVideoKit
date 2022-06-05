@@ -26,6 +26,7 @@ struct RenderAR {
     var rawBuffer: CVPixelBuffer? {
         if let view = view as? ARSCNView {
             guard let rawBuffer = view.session.currentFrame?.capturedImage else { return nil }
+  
             return rawBuffer
         } else if let view = view as? ARSKView {
             guard let rawBuffer = view.session.currentFrame?.capturedImage else { return nil }
@@ -92,12 +93,13 @@ struct RenderAR {
             guard let size = bufferSize else { return nil }
             //UIScreen.main.bounds.size
             var renderedFrame: UIImage?
+
             pixelsQueue.sync {
-                renderedFrame = renderEngine.snapshot(atTime: self.time, with: size, antialiasingMode: .none)
+                renderedFrame = renderEngine.snapshot(atTime: self.time, with: size, antialiasingMode: .none).rotate(by: 180)
             }
             if let _ = renderedFrame {
             } else {
-                renderedFrame = renderEngine.snapshot(atTime: time, with: size, antialiasingMode: .none)
+                renderedFrame = renderEngine.snapshot(atTime: time, with: size, antialiasingMode: .none).rotate(by: 180)
             }
             guard let buffer = renderedFrame!.buffer else { return nil }
             return buffer

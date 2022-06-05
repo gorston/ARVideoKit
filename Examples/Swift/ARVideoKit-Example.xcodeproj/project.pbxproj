@@ -23,18 +23,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		CA40D1CA284D0552002D51BE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FB36BDAA20086BB000002808 /* ARVideoKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FBD604D91FA969DD00EC9804;
+			remoteInfo = ARVideoKit;
+		};
 		FB36BDAE20086BB000002808 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FB36BDAA20086BB000002808 /* ARVideoKit.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = FBD604DA1FA969DD00EC9804;
-			remoteInfo = ARVideoKit;
-		};
-		FB36BDB220086BBB00002808 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FB36BDAA20086BB000002808 /* ARVideoKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = FBD604D91FA969DD00EC9804;
 			remoteInfo = ARVideoKit;
 		};
 /* End PBXContainerItemProxy section */
@@ -189,7 +189,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				FB36BDB320086BBB00002808 /* PBXTargetDependency */,
+				CA40D1CB284D0552002D51BE /* PBXTargetDependency */,
 			);
 			name = "ARVideoKit-Example";
 			productName = "ARVideoKit-Example";
@@ -278,10 +278,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		FB36BDB320086BBB00002808 /* PBXTargetDependency */ = {
+		CA40D1CB284D0552002D51BE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ARVideoKit;
-			targetProxy = FB36BDB220086BBB00002808 /* PBXContainerItemProxy */;
+			targetProxy = CA40D1CA284D0552002D51BE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -418,7 +418,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LXD85S9DW4;
+				DEVELOPMENT_TEAM = 4FXF5B238Z;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -427,7 +427,7 @@
 				INFOPLIST_FILE = "ARVideoKit-Example/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.ahmedbekhit.ARVideoKit-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-samplecode.FaceAndWorldTracking4FXF5B238Z";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -440,7 +440,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LXD85S9DW4;
+				DEVELOPMENT_TEAM = 4FXF5B238Z;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -449,7 +449,7 @@
 				INFOPLIST_FILE = "ARVideoKit-Example/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.ahmedbekhit.ARVideoKit-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-samplecode.FaceAndWorldTracking4FXF5B238Z";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
