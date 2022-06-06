@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "haishinkit.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/shogo4405/HaishinKit.swift",
+      "state" : {
+        "branch" : "main",
+        "revision" : "1538ff3ca2813d713c8b30060f670f1aa65aa233"
+      }
+    },
+    {
+      "identity" : "logboard",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/shogo4405/Logboard.git",
+      "state" : {
+        "revision" : "8cc7656b07e4d327fae42e1320e2e48b8868e3f6",
+        "version" : "2.2.2"
+      }
+    }
+  ],
+  "version" : 2
+}

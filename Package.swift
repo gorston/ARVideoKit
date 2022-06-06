@@ -17,7 +17,7 @@ let package = Package(
     targets: [
         .target(
             name: "ARVideoKit",
-            dependencies: [],
+            dependencies: ["HaishinKit"],
             path: "ARVideoKit")
     ]
 )
