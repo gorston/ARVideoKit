@@ -18,11 +18,18 @@ import ARKit
  * [Twitter](http://twitter.com/iAFapps)
  * [Email](mailto:me@ahmedbekhit.com)
  */
-public func initStreamController(url: String, streamKey: String) {
-    return globalStreamController = StreamController(url: url, streamKey: streamKey)
+
+
+public struct GlobalStreamController {
+   public var globalStreamController:StreamController?
+    
+    public init(url: String, streamKey: String) {
+        globalStreamController = StreamController(url: url, streamKey: streamKey)
+        }
+    
 }
 
-public var globalStreamController: StreamController?
+
 
 @available(iOS 11.0, *)
 @objc public class ARView: NSObject {

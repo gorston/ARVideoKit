@@ -24,7 +24,7 @@ class SCNViewController: UIViewController, ARSCNViewDelegate, RenderARDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initStreamController(url: "", streamKey: "")
+        GlobalStreamController(url: "", streamKey: "").globalStreamController
         // Set the view's delegate
         sceneView.delegate = self
         
