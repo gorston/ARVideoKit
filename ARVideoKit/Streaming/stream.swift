@@ -5,7 +5,6 @@ import SwiftUI
 import PhotosUI
 import Combine
 import Logboard
-import SwiftPMSupport
 
 @available(iOS 14.0, *)
 final class ExampleRecorderDelegate: DefaultAVRecorderDelegate {

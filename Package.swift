@@ -13,7 +13,7 @@ let package = Package(
             name: "ARVideoKit",
             targets: ["ARVideoKit"]),
     ],
-    dependencies: [ ],
+    dependencies: [ .package(url: "https://github.com/shogo4405/HaishinKit.swift.git",from: "1.2.3")],
     targets: [
         .target(
             name: "ARVideoKit",
