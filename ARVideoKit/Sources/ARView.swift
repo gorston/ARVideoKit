@@ -22,7 +22,7 @@ public func initStreamController(url: String, streamKey: String) {
     return globalStreamController = StreamController(url: url, streamKey: streamKey)
 }
 
-var globalStreamController: StreamController?
+public var globalStreamController: StreamController?
 
 @available(iOS 11.0, *)
 @objc public class ARView: NSObject {
