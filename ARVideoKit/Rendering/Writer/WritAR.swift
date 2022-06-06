@@ -10,7 +10,7 @@ import AVFoundation
 import CoreImage
 import UIKit
 
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
     private var assetWriter: AVAssetWriter!
     private var videoInput: AVAssetWriterInput!
@@ -290,7 +290,7 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
     }
 }
 
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 private extension WritAR {
     func append(pixel buffer: CVPixelBuffer, with time: CMTime) {
         

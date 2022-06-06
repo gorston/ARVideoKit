@@ -3,7 +3,7 @@
     "pins": [
       {
         "package": "HaishinKit",
-        "repositoryURL": "https://github.com/shogo4405/HaishinKit.swift.git",
+        "repositoryURL": "https://github.com/gorston/HaishinKit.swift.git",
         "state": {
           "branch": null,
           "revision": "8fc3f3b1a52778dc42ebe64b26e67b4a6b9027e0",

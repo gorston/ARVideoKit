@@ -9,7 +9,7 @@
 import Foundation
 import ARKit
 
-@available(iOS 11.0, *)
+@available(iOS 13.0, *)
 struct RenderAR {
     private var view: Any?
     private var renderEngine: SCNRenderer!

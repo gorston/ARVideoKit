@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
 
   # ARVideoKit for Swift 5.0
   s.source       = { :git => "https://github.com/AFathi/ARVideoKit.git", :tag => "1.6.0" }
-  s.source_files  = "ARVideoKit", "ARVideoKit/**/*.{h,m,swift}"
+  s.source_files  = "ARVideoKit", "ARVideoKit/**/*.{h,m,swift}", "HaishinKit"
 end

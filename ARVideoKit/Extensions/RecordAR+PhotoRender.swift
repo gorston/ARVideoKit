@@ -10,7 +10,7 @@ import AVFoundation
 import Photos
 import UIKit
 
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 extension RecordAR {
     
     func adjustTime(current: CMTime, resume: CMTime, pause: CMTime) -> CMTime {

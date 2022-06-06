@@ -18,13 +18,15 @@ import ARKit
  * [Twitter](http://twitter.com/iAFapps)
  * [Email](mailto:me@ahmedbekhit.com)
  */
+@available(iOS 14.0, *)
 public func initStreamController(url: String, streamKey: String) {
     return globalStreamController = StreamController(url: url, streamKey: streamKey)
 }
 
+@available(iOS 14.0, *)
 public var globalStreamController: StreamController?
 
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 @objc public class ARView: NSObject {
     private weak var parentVC: UIViewController?
     private var recentAngle = 0

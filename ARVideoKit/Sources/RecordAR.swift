@@ -21,7 +21,7 @@ import PhotosUI
  * [Twitter](http://twitter.com/iAFapps)
  * [Email](mailto:me@ahmedbekhit.com)
  */
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 @objc public class RecordAR: ARView {
     //MARK: - Public objects to configure RecordAR
     /**
@@ -723,7 +723,7 @@ import PhotosUI
 }
 
 //MARK: - Public methods for setting up UIViewController orientations
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 @objc public extension RecordAR {
     /**
      A method that prepares the video recorder with `ARConfiguration` 📝.
@@ -762,7 +762,7 @@ import PhotosUI
 }
 
 //MARK: - AR Video Frames Rendering
-@available(iOS 11.0, *)
+@available(iOS 14.0, *)
 extension RecordAR {
     @objc func renderFrame() {
         //frame rendering
