@@ -18,6 +18,12 @@ import ARKit
  * [Twitter](http://twitter.com/iAFapps)
  * [Email](mailto:me@ahmedbekhit.com)
  */
+public func initStreamController(url: String, streamKey: String) {
+    return globalStreamController = StreamController(url: url, streamKey: streamKey)
+}
+
+var globalStreamController: StreamController?
+
 @available(iOS 11.0, *)
 @objc public class ARView: NSObject {
     private weak var parentVC: UIViewController?
@@ -52,6 +58,7 @@ import ARKit
     
     @objc init?(ARSceneKit: ARSCNView) {
         super.init()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(deviceDidRotate), name: UIDevice.orientationDidChangeNotification, object: nil)
         
         let value = UIInterfaceOrientation.portrait.rawValue

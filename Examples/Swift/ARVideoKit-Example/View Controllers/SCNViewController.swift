@@ -24,6 +24,7 @@ class SCNViewController: UIViewController, ARSCNViewDelegate, RenderARDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        initStreamController(url: "", streamKey: "")
         // Set the view's delegate
         sceneView.delegate = self
         
@@ -53,8 +54,10 @@ class SCNViewController: UIViewController, ARSCNViewDelegate, RenderARDelegate, 
         // Set the renderer's delegate
         recorder?.renderAR = self
         
+        recorder?.recordStreamSettrings = .streamOnly
+        
         // Configure the renderer to perform additional image & video processing 👁
-        recorder?.onlyRenderWhileRecording = false
+//        recorder?.onlyRenderWhileRecording = false
         
         // Configure ARKit content mode. Default is .auto
         recorder?.contentMode = .aspectFill
@@ -266,7 +269,7 @@ extension SCNViewController {
 //MARK: - ARVideoKit Delegate Methods
 extension SCNViewController {
     func frame(didRender buffer: CVPixelBuffer, with time: CMTime, using rawBuffer: CVPixelBuffer) {
-     print(buffer)
+//     print(buffer)
     }
     
     func recorder(didEndRecording path: URL, with noError: Bool) {

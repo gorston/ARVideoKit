@@ -3,11 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		B466A8B82279E34C00BD7070 /* WeakProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B466A8B72279E34C00BD7070 /* WeakProxy.swift */; };
+		CA821961284D18E900FB4F6E /* stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA821960284D18E900FB4F6E /* stream.swift */; };
+		CA821964284D18F800FB4F6E /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = CA821963284D18F800FB4F6E /* HaishinKit */; };
 		FB2E36891FAE29C00035B8D6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = FB2E36881FAE29BF0035B8D6 /* LICENSE */; };
 		FB404FFE20D72A190056EA1D /* JPEG.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB404FFD20D72A190056EA1D /* JPEG.swift */; };
 		FBD604DF1FA969DD00EC9804 /* ARVideoKit.h in Headers */ = {isa = PBXBuildFile; fileRef = FBD604DD1FA969DD00EC9804 /* ARVideoKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -34,6 +36,7 @@
 
 /* Begin PBXFileReference section */
 		B466A8B72279E34C00BD7070 /* WeakProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeakProxy.swift; sourceTree = "<group>"; };
+		CA821960284D18E900FB4F6E /* stream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = stream.swift; sourceTree = "<group>"; };
 		FB2E36881FAE29BF0035B8D6 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		FB404FFD20D72A190056EA1D /* JPEG.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JPEG.swift; sourceTree = "<group>"; };
 		FBD604DA1FA969DD00EC9804 /* ARVideoKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ARVideoKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -65,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA821964284D18F800FB4F6E /* HaishinKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +81,14 @@
 				B466A8B72279E34C00BD7070 /* WeakProxy.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		CA82195F284D18D500FB4F6E /* Streaming */ = {
+			isa = PBXGroup;
+			children = (
+				CA821960284D18E900FB4F6E /* stream.swift */,
+			);
+			path = Streaming;
 			sourceTree = "<group>";
 		};
 		FBA0AA0A1FAD9D9D006C481B /* Writer */ = {
@@ -107,6 +119,7 @@
 		FBD604DC1FA969DD00EC9804 /* ARVideoKit */ = {
 			isa = PBXGroup;
 			children = (
+				CA82195F284D18D500FB4F6E /* Streaming */,
 				B466A8B62279E33800BD7070 /* Utils */,
 				FBD604E61FA96AD400EC9804 /* Enumerations */,
 				FBD604E71FA96AE500EC9804 /* Extensions */,
@@ -226,6 +239,9 @@
 			dependencies = (
 			);
 			name = ARVideoKit;
+			packageProductDependencies = (
+				CA821963284D18F800FB4F6E /* HaishinKit */,
+			);
 			productName = ARVideoKit;
 			productReference = FBD604DA1FA969DD00EC9804 /* ARVideoKit.framework */;
 			productType = "com.apple.product-type.framework";
@@ -255,6 +271,9 @@
 				Base,
 			);
 			mainGroup = FBD604D01FA969DD00EC9804;
+			packageReferences = (
+				CA821962284D18F800FB4F6E /* XCRemoteSwiftPackageReference "HaishinKit" */,
+			);
 			productRefGroup = FBD604DB1FA969DD00EC9804 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -295,6 +314,7 @@
 				FBD605141FA96BA100EC9804 /* ViewAR.swift in Sources */,
 				FBD604EE1FA96B2700EC9804 /* ARVideoOptions.swift in Sources */,
 				FBD605001FA96B5500EC9804 /* Generate+GIF.swift in Sources */,
+				CA821961284D18E900FB4F6E /* stream.swift in Sources */,
 				FBD605081FA96B6B00EC9804 /* Generate+LivePhoto.swift in Sources */,
 				FBD605121FA96BA100EC9804 /* RecordAR.swift in Sources */,
 				FBE5A5A62002BFCF0025C89F /* RenderAR.swift in Sources */,
@@ -359,7 +379,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-fembed-bitcode-marker";
@@ -417,11 +437,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "-fembed-bitcode";
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -444,15 +465,20 @@
 				ENABLE_BITCODE = YES;
 				INFOPLIST_FILE = ARVideoKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ahmedbekhit.ARVideoKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -470,14 +496,19 @@
 				ENABLE_BITCODE = YES;
 				INFOPLIST_FILE = ARVideoKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ahmedbekhit.ARVideoKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -503,6 +534,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CA821962284D18F800FB4F6E /* XCRemoteSwiftPackageReference "HaishinKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/shogo4405/HaishinKit.swift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CA821963284D18F800FB4F6E /* HaishinKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CA821962284D18F800FB4F6E /* XCRemoteSwiftPackageReference "HaishinKit" */;
+			productName = HaishinKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FBD604D11FA969DD00EC9804 /* Project object */;
 }

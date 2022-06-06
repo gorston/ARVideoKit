@@ -65,3 +65,9 @@ import Foundation
     // The current status of the Microphone access is disabled.
     case disabled
 }
+
+@objc public enum RecordStreamSettings: Int{
+    case videoOnly
+    case streamOnly
+    case both
+}

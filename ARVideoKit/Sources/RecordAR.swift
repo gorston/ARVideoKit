@@ -40,6 +40,8 @@ import PhotosUI
      An object that returns the current Microphone status.
      */
     @objc public internal(set)var micStatus: RecordARMicrophoneStatus = .unknown
+    
+   
     /**
      An object that allow customizing when to ask for Microphone permission, if needed. Default is `.manual`.
      */
@@ -55,6 +57,9 @@ import PhotosUI
             }
         }
     }
+   
+    
+    @objc public var recordStreamSettrings: RecordStreamSettings = .streamOnly
     /**
      An object that allow customizing the video frame per second rate. Default is `.auto`.
      */
@@ -67,6 +72,9 @@ import PhotosUI
      An object that allow customizing the AR content mode. Default is `.auto`.
      */
     @objc public var contentMode: ARFrameMode = .auto
+    
+    
+    
     /**
      A boolean that enables or disables AR content rendering before recording for image & video processing. Default is `true`.
      */
@@ -816,6 +824,7 @@ extension RecordAR {
                     
                     self.writer = WritAR(output: self.currentVideoPath!, width: Int(size.width), height: Int(size.height), adjustForSharing: self.adjustVideoForSharing, audioEnabled: self.enableAudio, orientaions: self.inputViewOrientations, queue: self.writerQueue, allowMix: self.enableMixWithOthers)
                     self.writer?.videoInputOrientation = self.videoOrientation
+                    self.writer?.recordStreamSettrings = self.recordStreamSettrings
                     self.writer?.delegate = self.delegate
                 }
             } else if !self.isRecording && self.adjustPausedTime {

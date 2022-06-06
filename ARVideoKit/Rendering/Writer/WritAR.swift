@@ -24,9 +24,10 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
     let audioBufferQueue = DispatchQueue(label: "com.ahmedbekhit.AudioBufferQueue")
 
     private var isRecording: Bool = false
-    
+    let streamController = globalStreamController
     weak var delegate: RecordARDelegate?
     var videoInputOrientation: ARVideoOrientation = .auto
+    var recordStreamSettrings: RecordStreamSettings = .streamOnly
 
     init(output: URL, width: Int, height: Int, adjustForSharing: Bool, audioEnabled: Bool, orientaions:[ARInputViewOrientation], queue: DispatchQueue, allowMix: Bool) {
         super.init()
@@ -36,6 +37,10 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
             // FIXME: handle when failed to allocate AVAssetWriter.
             return
         }
+        guard let streamController = streamController else {
+            return
+        }
+        streamController.config()
         if audioEnabled {
             if allowMix {
                 let audioOptions: AVAudioSession.CategoryOptions = [.mixWithOthers , .allowBluetooth, .defaultToSpeaker, .interruptSpokenAudioAndMixWithOthers]
@@ -65,6 +70,11 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
 
         videoInput.expectsMediaDataInRealTime = true
         pixelBufferInput = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: videoInput, sourcePixelBufferAttributes: nil)
+        
+        if recordStreamSettrings != .videoOnly {
+            streamController.startPublish()
+        }
+      
         
         var angleEnabled: Bool {
             for v in orientaions {
@@ -206,13 +216,37 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
     }
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+       
+    
+        
         if let input = audioInput {
             audioBufferQueue.async { [weak self] in
                 if let isRecording = self?.isRecording,
                     let session = self?.session,
                     input.isReadyForMoreMediaData && isRecording
                         && session.isRunning {
-                    input.append(sampleBuffer)
+                    
+                    switch self?.recordStreamSettrings {
+                    case .videoOnly:
+                        input.append(sampleBuffer)
+                    case .streamOnly:
+                        guard let streamController = self?.streamController else {
+                            return
+                        }
+                        streamController.rtmpStream.appendSampleBuffer(sampleBuffer, withType: .audio)
+                    case .both:
+                        guard let streamController = self?.streamController else {
+                            return
+                        }
+                        input.append(sampleBuffer)
+                        streamController.rtmpStream.appendSampleBuffer(sampleBuffer, withType: .audio)
+                    case .none:
+                        return
+                    }
+                   
+                    
+                   
+                    
                 }
             }
         }
@@ -223,16 +257,26 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
     }
     
     func end(writing finished: @escaping () -> Void) {
+        
+        if recordStreamSettrings != .videoOnly {
+            guard let streamController = streamController else {
+                return
+            }
+            streamController.stopPublish()
+        }
+      
         if let session = session {
             if session.isRunning {
                 session.stopRunning()
             }
         }
-        
-        if assetWriter.status == .writing {
-            isRecording = false
-            assetWriter.finishWriting(completionHandler: finished)
+        if recordStreamSettrings != .streamOnly {
+            if assetWriter.status == .writing {
+                isRecording = false
+                assetWriter.finishWriting(completionHandler: finished)
+            }
         }
+       
     }
     
     func cancel() {
@@ -249,7 +293,90 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
 @available(iOS 11.0, *)
 private extension WritAR {
     func append(pixel buffer: CVPixelBuffer, with time: CMTime) {
-        pixelBufferInput.append(buffer, withPresentationTime: time)
+        
+        switch self.recordStreamSettrings {
+        case .videoOnly:
+            pixelBufferInput.append(buffer, withPresentationTime: time)
+        case .streamOnly:
+            guard let streamController = self.streamController else {
+                return
+            }
+            guard let newBuffer = rotate(buffer) else {
+                return
+            }
+            
+            guard  let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+                return
+            }
+            
+            streamController.rtmpStream.orientation = .landscapeRight
+            
+            
+            streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
+        case .both:
+            guard let streamController = self.streamController else {
+                return
+            }
+            pixelBufferInput.append(buffer, withPresentationTime: time)
+            guard let newBuffer = rotate(buffer) else {
+                return
+            }
+            
+            guard  let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+                return
+            }
+            
+            streamController.rtmpStream.orientation = .landscapeRight
+            
+            
+            streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
+       
+        }
+    }
+    
+    func rotate(_ sampleBuffer: CVPixelBuffer) -> CVPixelBuffer? {
+           
+            var newPixelBuffer: CVPixelBuffer?
+            let error = CVPixelBufferCreate(kCFAllocatorDefault,
+                                            CVPixelBufferGetHeight(sampleBuffer),
+                                            CVPixelBufferGetWidth(sampleBuffer),
+                                            kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+                                            nil,
+                                            &newPixelBuffer)
+            guard error == kCVReturnSuccess else {
+                return nil
+            }
+            let ciImage = CIImage(cvPixelBuffer: sampleBuffer).oriented(.left)
+            let context = CIContext(options: nil)
+            context.render(ciImage, to: newPixelBuffer!)
+            return newPixelBuffer
+        }
+    
+    
+    private func createVideoSampleBufferWithPixelBuffer(_ pixelBuffer: CVPixelBuffer,presentationTime: CMTime) -> CMSampleBuffer? {
+        var sampleBuffer: CMSampleBuffer?
+        var formatDescription: CMFormatDescription? = nil
+        
+    CMVideoFormatDescriptionCreateForImageBuffer(allocator: kCFAllocatorDefault, imageBuffer: pixelBuffer, formatDescriptionOut: &formatDescription)
+        var timingInfo = CMSampleTimingInfo(duration: .invalid,  presentationTimeStamp: presentationTime, decodeTimeStamp: .invalid)
+       
+        let err = CMSampleBufferCreateForImageBuffer(allocator: kCFAllocatorDefault,
+                                                     imageBuffer: pixelBuffer,
+                                                     dataReady: true,
+                                                     makeDataReadyCallback: nil,
+                                                     refcon: nil,
+                                                     formatDescription: formatDescription!,
+                                                     sampleTiming: &timingInfo,
+                                                     sampleBufferOut: &sampleBuffer)
+        
+        
+        if sampleBuffer == nil {
+            print("Error: Sample buffer creation failed (error code: \(err))")
+        }
+       
+       
+       
+        return sampleBuffer
     }
 }
 
