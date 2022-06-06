@@ -37,8 +37,8 @@ final public class StreamController: ObservableObject {
         self.streamKey = streamKey
     }
     
-    @Published var rtmpConnection = RTMPConnection()
-    @Published var rtmpStream: RTMPStream!
+    @Published public var rtmpConnection = RTMPConnection()
+    @Published public var rtmpStream: RTMPStream!
     private var sharedObject: RTMPSharedObject!
     private var currentEffect: VideoEffect?
     @Published var currentPosition: AVCaptureDevice.Position = .back
@@ -66,7 +66,7 @@ final public class StreamController: ObservableObject {
     
     var bitrate = 3000
 
-    func config() {
+   public func config() {
         
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.orientation = .landscapeRight
@@ -162,7 +162,7 @@ final public class StreamController: ObservableObject {
         rtmpStream.close()
     }
     
-    func startPublish() {
+    public   func startPublish() {
      
         
         rtmpConnection.addEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
@@ -171,7 +171,7 @@ final public class StreamController: ObservableObject {
         
     }
     
-    func stopPublish() {
+    public   func stopPublish() {
 //        UIApplication.shared.isIdleTimerDisabled = false
         rtmpConnection.close()
         rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)

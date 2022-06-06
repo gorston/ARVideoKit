@@ -24,7 +24,7 @@ class SCNViewController: UIViewController, ARSCNViewDelegate, RenderARDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        GlobalStreamController(url: "", streamKey: "").globalStreamController
+        initStreamController(url: "", streamKey: "")
         // Set the view's delegate
         sceneView.delegate = self
         
@@ -69,6 +69,8 @@ class SCNViewController: UIViewController, ARSCNViewDelegate, RenderARDelegate, 
         recorder?.inputViewOrientations = [.landscapeLeft, .landscapeRight, .portrait]
         // Configure RecordAR to store media files in local app directory
         recorder?.deleteCacheWhenExported = false
+        
+        globalStreamController?.config()
     }
     
     override func viewWillAppear(_ animated: Bool) {
