@@ -346,27 +346,26 @@ private extension WritAR {
             guard error == kCVReturnSuccess else {
                 return nil
             }
-            let ciImage = CIImage(cvPixelBuffer: sampleBuffer).oriented(.left)
+        let ciImage = CIImage(cvPixelBuffer: sampleBuffer).oriented(.left)
        
             let context = CIContext(options: nil)
-        let resizeFilter = CIFilter(name:"CILanczosScaleTransform")!
-        print(ciImage.extent.height)
-        print(ciImage.extent.width)
-        // Desired output size
-        let targetSize = CGSize(width:1920, height:1080)
-
-        // Compute scale and corrective aspect ratio
-        let scale = targetSize.height / (ciImage.extent.height)
-        let aspectRatio = targetSize.width/((ciImage.extent.width) * scale)
-
-        // Apply resizing
-        resizeFilter.setValue(ciImage, forKey: kCIInputImageKey)
-        resizeFilter.setValue(scale, forKey: kCIInputScaleKey)
-        resizeFilter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
-        let outputImage = resizeFilter.outputImage
+       
+//        let resizeFilter = CIFilter(name:"CILanczosScaleTransform")!
+//        // Desired output size
+//        let targetSize = CGSize(width:1920, height:1080)
+//
+//        // Compute scale and corrective aspect ratio
+//        let scale = targetSize.height / (ciImage.extent.height)
+//        let aspectRatio = targetSize.width/((ciImage.extent.width) * scale)
+//
+//        // Apply resizing
+//        resizeFilter.setValue(ciImage, forKey: kCIInputImageKey)
+//        resizeFilter.setValue(scale, forKey: kCIInputScaleKey)
+//        resizeFilter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
+//        let outputImage = resizeFilter.outputImage
+//
         
-        
-            context.render(outputImage!, to: newPixelBuffer!)
+            context.render(ciImage, to: newPixelBuffer!)
             return newPixelBuffer
         }
     
