@@ -353,11 +353,11 @@ private extension WritAR {
         print(ciImage.extent.height)
         print(ciImage.extent.width)
         // Desired output size
-        let targetSize = NSSize(width:1920, height:1080)
+        let targetSize = CGSize(width:1920, height:1080)
 
         // Compute scale and corrective aspect ratio
-        let scale = targetSize.height / (ciImage?.extent.height)!
-        let aspectRatio = targetSize.width/((ciImage?.extent.width)! * scale)
+        let scale = targetSize.height / (ciImage.extent.height)
+        let aspectRatio = targetSize.width/((ciImage.extent.width) * scale)
 
         // Apply resizing
         resizeFilter.setValue(ciImage, forKey: kCIInputImageKey)
@@ -366,7 +366,7 @@ private extension WritAR {
         let outputImage = resizeFilter.outputImage
         
         
-            context.render(outputImage, to: newPixelBuffer!)
+            context.render(outputImage!, to: newPixelBuffer!)
             return newPixelBuffer
         }
     
