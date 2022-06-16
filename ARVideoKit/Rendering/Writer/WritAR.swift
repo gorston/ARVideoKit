@@ -347,8 +347,26 @@ private extension WritAR {
                 return nil
             }
             let ciImage = CIImage(cvPixelBuffer: sampleBuffer).oriented(.left)
+       
             let context = CIContext(options: nil)
-            context.render(ciImage, to: newPixelBuffer!)
+        let resizeFilter = CIFilter(name:"CILanczosScaleTransform")!
+        print(ciImage.extent.height)
+        print(ciImage.extent.width)
+        // Desired output size
+        let targetSize = NSSize(width:1920, height:1080)
+
+        // Compute scale and corrective aspect ratio
+        let scale = targetSize.height / (ciImage?.extent.height)!
+        let aspectRatio = targetSize.width/((ciImage?.extent.width)! * scale)
+
+        // Apply resizing
+        resizeFilter.setValue(ciImage, forKey: kCIInputImageKey)
+        resizeFilter.setValue(scale, forKey: kCIInputScaleKey)
+        resizeFilter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
+        let outputImage = resizeFilter.outputImage
+        
+        
+            context.render(outputImage, to: newPixelBuffer!)
             return newPixelBuffer
         }
     
