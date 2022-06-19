@@ -303,11 +303,11 @@ private extension WritAR {
             guard let streamController = self.streamController else {
                 return
             }
-            guard let newBuffer = rotate(buffer) else {
-                return
-            }
+//            guard let newBuffer = rotate(buffer) else {
+//                return
+//            }
             
-            guard  let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+            guard  let newSample = createVideoSampleBufferWithPixelBuffer(buffer, presentationTime: time) else {
                 return
             }
             
