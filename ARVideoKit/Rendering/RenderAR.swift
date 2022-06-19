@@ -68,13 +68,12 @@ struct RenderAR {
                 }
             }
         }
-
-//        if width > height {
-//            return CGSize(width: height, height: width)
-//        } else {
-//            return CGSize(width: width, height: height)
-//        }
-        return CGSize(width: height, height: width)
+        
+        if width > height {
+            return CGSize(width: height, height: width)
+        } else {
+            return CGSize(width: width, height: height)
+        }
     }
     
     var bufferSizeFill: CGSize? {

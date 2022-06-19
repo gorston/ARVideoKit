@@ -215,7 +215,7 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
         }
     }
 
-   public var audioEnabled = true
+    var audioEnabled = true
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
        
@@ -303,11 +303,11 @@ private extension WritAR {
             guard let streamController = self.streamController else {
                 return
             }
-//            guard let newBuffer = rotate(buffer) else {
-//                return
-//            }
+            guard let newBuffer = rotate(buffer) else {
+                return
+            }
             
-            guard  let newSample = createVideoSampleBufferWithPixelBuffer(buffer, presentationTime: time) else {
+            guard  let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
                 return
             }
             
@@ -352,20 +352,6 @@ private extension WritAR {
        
             let context = CIContext(options: nil)
        
-//        let resizeFilter = CIFilter(name:"CILanczosScaleTransform")!
-//        // Desired output size
-//        let targetSize = CGSize(width:1920, height:1080)
-//
-//        // Compute scale and corrective aspect ratio
-//        let scale = targetSize.height / (ciImage.extent.height)
-//        let aspectRatio = targetSize.width/((ciImage.extent.width) * scale)
-//
-//        // Apply resizing
-//        resizeFilter.setValue(ciImage, forKey: kCIInputImageKey)
-//        resizeFilter.setValue(scale, forKey: kCIInputScaleKey)
-//        resizeFilter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
-//        let outputImage = resizeFilter.outputImage
-//
         
             context.render(ciImage, to: newPixelBuffer!)
             return newPixelBuffer
