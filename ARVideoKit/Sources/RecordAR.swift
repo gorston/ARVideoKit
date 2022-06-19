@@ -89,6 +89,7 @@ import PhotosUI
     @objc public var enableAudio: Bool = true {
         didSet {
             self.requestMicPermission = (self.requestMicPermission == .manual) ? .manual: .auto
+            self.writer?.audioEnabled = self.enableAudio
         }
     }
     /**
