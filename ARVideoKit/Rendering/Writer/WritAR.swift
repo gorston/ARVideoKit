@@ -303,49 +303,49 @@ private extension WritAR {
             }
             
             if isBrbOn {
-//                guard let pixelBuffer = brbImage?.createVideoSampleBufferWithPixelBuffer((brbImage?.cvPixelBuffer)!, presentationTime: time) else {
-//                    return
-//                }
-//                streamController.rtmpStream.orientation = .landscapeRight
-//
-//                streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
+                guard let pixelBuffer = brbImage?.createVideoSampleBufferWithPixelBuffer((brbImage?.cvPixelBuffer)!, presentationTime: time) else {
+                    return
+                }
+                streamController.rtmpStream.orientation = .landscapeRight
+                
+                streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
                 guard let newBuffer = rotate(buffer) else {
                     return
                 }
             
-//                guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
-//                    return
-//                }
-//            
-//                streamController.rtmpStream.orientation = .landscapeRight
-//            
-//                streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
+                guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+                    return
+                }
+            
+                streamController.rtmpStream.orientation = .landscapeRight
+            
+                streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
             }
         case .both:
             guard let streamController = streamController else {
                 return
             }
             if isBrbOn {
-//                guard let pixelBuffer = brbImage?.createVideoSampleBufferWithPixelBuffer((brbImage?.cvPixelBuffer)!, presentationTime: time) else {
-//                    return
-//                }
-//                streamController.rtmpStream.orientation = .landscapeRight
-//
-//                streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
+                guard let pixelBuffer = brbImage?.createVideoSampleBufferWithPixelBuffer((brbImage?.cvPixelBuffer)!, presentationTime: time) else {
+                    return
+                }
+                streamController.rtmpStream.orientation = .landscapeRight
+                
+                streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
                 pixelBufferInput.append(buffer, withPresentationTime: time)
                 guard let newBuffer = rotate(buffer) else {
                     return
                 }
             
-//                guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
-//                    return
-//                }
-//
-//                streamController.rtmpStream.orientation = .landscapeRight
-//
-//                streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
+                guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+                    return
+                }
+            
+                streamController.rtmpStream.orientation = .landscapeRight
+            
+                streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
             }
         }
     }
