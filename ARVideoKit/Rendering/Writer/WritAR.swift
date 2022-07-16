@@ -23,8 +23,6 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
 
     let audioBufferQueue = DispatchQueue(label: "com.ahmedbekhit.AudioBufferQueue")
 
-    let streamBufferQueue = DispatchQueue(label: "streamBufferQueue")
-    
     private var isRecording: Bool = false
     let streamController = globalStreamController
     weak var delegate: RecordARDelegate?
@@ -289,64 +287,65 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
         isRecording = false
         assetWriter.cancelWriting()
     }
+}
 
+@available(iOS 14.0, *)
+private extension WritAR {
     func append(pixel buffer: CVPixelBuffer, with time: CMTime) {
-        streamBufferQueue.async {
-            switch self.recordStreamSettrings {
-            case .videoOnly:
-                if !self.isBrbOn {
-                    self.pixelBufferInput.append(buffer, withPresentationTime: time)
-                }
-            case .streamOnly:
-                guard let streamController = self.streamController else {
+        switch recordStreamSettrings {
+        case .videoOnly:
+            if !isBrbOn {
+                pixelBufferInput.append(buffer, withPresentationTime: time)
+            }
+        case .streamOnly:
+            guard let streamController = streamController else {
+                return
+            }
+            
+            if isBrbOn {
+//                guard let pixelBuffer = brbImage?.createVideoSampleBufferWithPixelBuffer((brbImage?.cvPixelBuffer)!, presentationTime: time) else {
+//                    return
+//                }
+//                streamController.rtmpStream.orientation = .landscapeRight
+//
+//                streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
+            } else {
+                guard let newBuffer = rotate(buffer) else {
                     return
                 }
             
-                if self.isBrbOn {
-                    guard let pixelBuffer = self.brbImage?.createVideoSampleBufferWithPixelBuffer((self.brbImage?.cvPixelBuffer)!, presentationTime: time) else {
-                        return
-                    }
-                    streamController.rtmpStream.orientation = .landscapeRight
-                
-                    streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
-                } else {
-                    guard let newBuffer = self.rotate(buffer) else {
-                        return
-                    }
-            
-                    guard let newSample = self.createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
-                        return
-                    }
-            
-                    streamController.rtmpStream.orientation = .landscapeRight
-            
-                    streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
-                }
-            case .both:
-                guard let streamController = self.streamController else {
+//                guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+//                    return
+//                }
+//            
+//                streamController.rtmpStream.orientation = .landscapeRight
+//            
+//                streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
+            }
+        case .both:
+            guard let streamController = streamController else {
+                return
+            }
+            if isBrbOn {
+//                guard let pixelBuffer = brbImage?.createVideoSampleBufferWithPixelBuffer((brbImage?.cvPixelBuffer)!, presentationTime: time) else {
+//                    return
+//                }
+//                streamController.rtmpStream.orientation = .landscapeRight
+//
+//                streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
+            } else {
+                pixelBufferInput.append(buffer, withPresentationTime: time)
+                guard let newBuffer = rotate(buffer) else {
                     return
                 }
-                if self.isBrbOn {
-                    guard let pixelBuffer = self.brbImage?.createVideoSampleBufferWithPixelBuffer((self.brbImage?.cvPixelBuffer)!, presentationTime: time) else {
-                        return
-                    }
-                    streamController.rtmpStream.orientation = .landscapeRight
-                
-                    streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
-                } else {
-                    self.pixelBufferInput.append(buffer, withPresentationTime: time)
-                    guard let newBuffer = self.rotate(buffer) else {
-                        return
-                    }
             
-                    guard let newSample = self.createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
-                        return
-                    }
-            
-                    streamController.rtmpStream.orientation = .landscapeRight
-            
-                    streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
-                }
+//                guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+//                    return
+//                }
+//
+//                streamController.rtmpStream.orientation = .landscapeRight
+//
+//                streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
             }
         }
     }
