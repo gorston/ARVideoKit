@@ -28,7 +28,9 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
     weak var delegate: RecordARDelegate?
     var videoInputOrientation: ARVideoOrientation = .auto
     var recordStreamSettrings: RecordStreamSettings = .streamOnly
-
+    var brbImage: UIImage?
+    let brbScreenUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("brb.jpg")
+    
     init(output: URL, width: Int, height: Int, adjustForSharing: Bool, audioEnabled: Bool, orientaions: [ARInputViewOrientation], queue: DispatchQueue, allowMix: Bool) {
         super.init()
         do {
@@ -40,7 +42,11 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
         guard let streamController = streamController else {
             return
         }
-//        streamController.config()
+        do
+        { brbImage = UIImage(data: try Data(contentsOf: brbScreenUrl)) }
+        catch {
+            print("image error")
+        }
         if audioEnabled {
             if allowMix {
                 let audioOptions: AVAudioSession.CategoryOptions = [.mixWithOthers, .allowBluetooth, .defaultToSpeaker, .interruptSpokenAudioAndMixWithOthers]
@@ -215,6 +221,8 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
 
     var audioEnabled = true
     
+    var isBrbOn = false
+    
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if let input = audioInput, audioEnabled {
             audioBufferQueue.async { [weak self] in
@@ -286,38 +294,59 @@ private extension WritAR {
     func append(pixel buffer: CVPixelBuffer, with time: CMTime) {
         switch recordStreamSettrings {
         case .videoOnly:
-            pixelBufferInput.append(buffer, withPresentationTime: time)
+            if !isBrbOn {
+                pixelBufferInput.append(buffer, withPresentationTime: time)
+            }
         case .streamOnly:
             guard let streamController = streamController else {
                 return
             }
-            guard let newBuffer = rotate(buffer) else {
-                return
+            
+            if isBrbOn {
+                guard let pixelBuffer = brbImage?.createVideoSampleBufferWithPixelBuffer((brbImage?.cvPixelBuffer)!, presentationTime: time) else {
+                    return
+                }
+                streamController.rtmpStream.orientation = .landscapeRight
+                
+                streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
+            } else {
+                guard let newBuffer = rotate(buffer) else {
+                    return
+                }
+            
+                guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+                    return
+                }
+            
+                streamController.rtmpStream.orientation = .landscapeRight
+            
+                streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
             }
-            
-            guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
-                return
-            }
-            
-            streamController.rtmpStream.orientation = .landscapeRight
-            
-            streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
         case .both:
             guard let streamController = streamController else {
                 return
             }
-            pixelBufferInput.append(buffer, withPresentationTime: time)
-            guard let newBuffer = rotate(buffer) else {
-                return
+            if isBrbOn {
+                guard let pixelBuffer = brbImage?.createVideoSampleBufferWithPixelBuffer((brbImage?.cvPixelBuffer)!, presentationTime: time) else {
+                    return
+                }
+                streamController.rtmpStream.orientation = .landscapeRight
+                
+                streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
+            } else {
+                pixelBufferInput.append(buffer, withPresentationTime: time)
+                guard let newBuffer = rotate(buffer) else {
+                    return
+                }
+            
+                guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+                    return
+                }
+            
+                streamController.rtmpStream.orientation = .landscapeRight
+            
+                streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
             }
-            
-            guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
-                return
-            }
-            
-            streamController.rtmpStream.orientation = .landscapeRight
-            
-            streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
         }
     }
     
@@ -384,5 +413,58 @@ class logAR {
                 }
             }
         }
+    }
+}
+
+extension UIImage {
+    var cvPixelBuffer: CVPixelBuffer? {
+        let attrs = [
+            String(kCVPixelBufferCGImageCompatibilityKey): kCFBooleanTrue,
+            String(kCVPixelBufferCGBitmapContextCompatibilityKey): kCFBooleanTrue
+        ] as [String: Any]
+        var buffer: CVPixelBuffer?
+        let status = CVPixelBufferCreate(kCFAllocatorDefault, Int(size.width), Int(size.height), kCVPixelFormatType_32ARGB, attrs as CFDictionary, &buffer)
+        guard status == kCVReturnSuccess else {
+            return nil
+        }
+
+        CVPixelBufferLockBaseAddress(buffer!, CVPixelBufferLockFlags(rawValue: 0))
+        let pixelData = CVPixelBufferGetBaseAddress(buffer!)
+
+        let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
+        let context = CGContext(data: pixelData, width: Int(size.width), height: Int(size.height), bitsPerComponent: 8, bytesPerRow: CVPixelBufferGetBytesPerRow(buffer!), space: rgbColorSpace, bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue)
+
+        context?.translateBy(x: 0, y: size.height)
+        context?.scaleBy(x: 1.0, y: -1.0)
+
+        UIGraphicsPushContext(context!)
+        draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        UIGraphicsPopContext()
+        CVPixelBufferUnlockBaseAddress(buffer!, CVPixelBufferLockFlags(rawValue: 0))
+
+        return buffer
+    }
+       
+    func createVideoSampleBufferWithPixelBuffer(_ pixelBuffer: CVPixelBuffer, presentationTime: CMTime) -> CMSampleBuffer? {
+        var sampleBuffer: CMSampleBuffer?
+        var formatDescription: CMFormatDescription?
+        
+        CMVideoFormatDescriptionCreateForImageBuffer(allocator: kCFAllocatorDefault, imageBuffer: pixelBuffer, formatDescriptionOut: &formatDescription)
+        var timingInfo = CMSampleTimingInfo(duration: .invalid, presentationTimeStamp: presentationTime, decodeTimeStamp: .invalid)
+       
+        let err = CMSampleBufferCreateForImageBuffer(allocator: kCFAllocatorDefault,
+                                                     imageBuffer: pixelBuffer,
+                                                     dataReady: true,
+                                                     makeDataReadyCallback: nil,
+                                                     refcon: nil,
+                                                     formatDescription: formatDescription!,
+                                                     sampleTiming: &timingInfo,
+                                                     sampleBufferOut: &sampleBuffer)
+        
+        if sampleBuffer == nil {
+            print("Error: Sample buffer creation failed (error code: \(err))")
+        }
+       
+        return sampleBuffer
     }
 }

@@ -92,6 +92,14 @@ import PhotosUI
             self.writer?.audioEnabled = self.enableAudio
         }
     }
+    
+    @objc public var isBrbOn: Bool = false {
+        didSet {
+            
+            self.writer?.isBrbOn = self.isBrbOn
+        }
+    }
+    
     /**
      A boolean that enables or disables audio `mixWithOthers` if audio recording is enabled. This allows playing music and recording audio at the same time. Default is `true`.
      */
