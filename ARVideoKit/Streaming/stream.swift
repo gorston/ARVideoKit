@@ -1,33 +1,34 @@
-import HaishinKit
 import AVFoundation
-import VideoToolbox
-import SwiftUI
-import PhotosUI
 import Combine
+import HaishinKit
 import Logboard
+import PhotosUI
+import SwiftUI
+import VideoToolbox
+
+//@available(iOS 14.0, *)
+//final class ExampleRecorderDelegate: DefaultAVRecorderDelegate {
+//    static let `default` = ExampleRecorderDelegate()
+//
+//    override func didFinishWriting(_ recorder: AVRecorder) {
+//        guard let writer: AVAssetWriter = recorder.writer else {
+//            return
+//        }
+//        PHPhotoLibrary.shared().performChanges({ () in
+//            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: writer.outputURL)
+//        }, completionHandler: { _, error in
+//            do {
+//                try FileManager.default.removeItem(at: writer.outputURL)
+//            } catch {
+//                print(error)
+//            }
+//        })
+//    }
+//}
 
 @available(iOS 14.0, *)
-final class ExampleRecorderDelegate: DefaultAVRecorderDelegate {
-    static let `default` = ExampleRecorderDelegate()
-    
-    override func didFinishWriting(_ recorder: AVRecorder) {
-        guard let writer: AVAssetWriter = recorder.writer else {
-            return
-        }
-        PHPhotoLibrary.shared().performChanges({() -> Void in
-            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: writer.outputURL)
-        }, completionHandler: { _, error -> Void in
-            do {
-                try FileManager.default.removeItem(at: writer.outputURL)
-            } catch {
-                print(error)
-            }
-        })
-    }
-}
-@available(iOS 14.0, *)
-final public class StreamController: ObservableObject {
-    let maxRetryCount: Int = 5
+public final class StreamController: ObservableObject {
+    let maxRetryCount: Int = 2
     
     let uri: String
     let streamKey: String
@@ -59,30 +60,27 @@ final public class StreamController: ObservableObject {
         }
     }
     
-    
     var videoEffectData = ["None", "Monochrome", "Pronoma"]
 
     var frameRateData = ["15.0", "30.0", "60.0"]
     
     var bitrate = 3000
 
-   public func config() {
-        
+    public func config() {
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.orientation = .landscapeRight
         rtmpStream.captureSettings = [
             .sessionPreset: AVCaptureSession.Preset.hd1920x1080,
 
-            
             // .preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode.auto
         ]
         rtmpStream.videoSettings = [
             .width: 1920,
             .height: 1080,
             .profileLevel: kVTProfileLevel_H264_High_AutoLevel,
-            .bitrate: bitrate * 1000
+            .bitrate: bitrate * 1000,
         ]
-        rtmpStream.mixer.recorder.delegate = ExampleRecorderDelegate.shared
+//        rtmpStream.mixer.recorder.delegate = ExampleRecorderDelegate.shared
         
         nc.publisher(for: UIDevice.orientationDidChangeNotification, object: nil)
             .sink { [weak self] _ in
@@ -128,13 +126,11 @@ final public class StreamController: ObservableObject {
     
     func checkDeviceAuthorization() {
         let requiredAccessLevel: PHAccessLevel = .readWrite
-        PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { authorizationStatus in
-  
+        PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { _ in
         }
     }
     
     func registerForPublishEvent() {
-          
         rtmpStream.publisher(for: \.currentFPS)
             .sink { [weak self] currentFPS in
                 guard let self = self else { return }
@@ -146,14 +142,12 @@ final public class StreamController: ObservableObject {
             .store(in: &subscriptions)
         
         nc.publisher(for: AVAudioSession.interruptionNotification, object: nil)
-            .sink { notification in
-               
+            .sink { _ in
             }
             .store(in: &subscriptions)
         
         nc.publisher(for: AVAudioSession.routeChangeNotification, object: nil)
-            .sink { notification in
-              
+            .sink { _ in
             }
             .store(in: &subscriptions)
     }
@@ -162,16 +156,13 @@ final public class StreamController: ObservableObject {
         rtmpStream.close()
     }
     
-    public   func startPublish() {
-     
-        
+    public func startPublish() {
         rtmpConnection.addEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
         rtmpConnection.addEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
-        rtmpConnection.connect(self.uri)
-        
+        rtmpConnection.connect(uri)
     }
     
-    public   func stopPublish() {
+    public func stopPublish() {
 //        UIApplication.shared.isIdleTimerDisabled = false
         rtmpConnection.close()
         rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
@@ -185,10 +176,6 @@ final public class StreamController: ObservableObject {
     func pausePublish() {
         rtmpStream.paused.toggle()
     }
-    
-   
-    
- 
     
     func changeZoomLevel(level: CGFloat) {
         rtmpStream.setZoomFactor(level, ramping: true, withRate: 5.0)
@@ -208,18 +195,19 @@ final public class StreamController: ObservableObject {
         guard let data: ASObject = e.data as? ASObject, let code: String = data["code"] as? String else {
             return
         }
-       print(code)
+        print(code)
         switch code {
         case RTMPConnection.Code.connectSuccess.rawValue:
             retryCount = 0
-            rtmpStream.publish(self.streamKey)
-            // sharedObject!.connect(rtmpConnection)
+            rtmpStream.publish(streamKey)
+        // sharedObject!.connect(rtmpConnection)
         case RTMPConnection.Code.connectFailed.rawValue, RTMPConnection.Code.connectClosed.rawValue:
             guard retryCount <= maxRetryCount else {
+                print("disconnect pizda")
                 return
             }
             Thread.sleep(forTimeInterval: pow(2.0, Double(retryCount)))
-            rtmpConnection.connect(self.uri)
+            rtmpConnection.connect(uri)
             retryCount += 1
         default:
             break
@@ -228,7 +216,7 @@ final public class StreamController: ObservableObject {
     
     @objc
     private func rtmpErrorHandler(_ notification: Notification) {
-        
-        rtmpConnection.connect(self.uri)
+        print("zalupaHappens")
+        rtmpConnection.connect(uri)
     }
 }
