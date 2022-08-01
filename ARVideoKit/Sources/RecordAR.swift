@@ -846,7 +846,7 @@ extension RecordAR {
                     self.writer?.videoInputOrientation = self.videoOrientation
                     self.writer?.recordStreamSettrings = self.recordStreamSettrings
                     self.writer?.delegate = self.delegate
-                    self.writer?.brbImage = self.brbImage
+//                    self.writer?.brbImage = self.brbImage
                 }
             } else if !self.isRecording, self.adjustPausedTime {
                 writer?.pause()
