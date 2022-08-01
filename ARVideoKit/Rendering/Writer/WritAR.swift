@@ -29,7 +29,7 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
     var videoInputOrientation: ARVideoOrientation = .auto
     var recordStreamSettrings: RecordStreamSettings = .streamOnly
     var brbImage: UIImage?
-    
+    let brbScreenUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("brb.jpg")
     
     init(output: URL, width: Int, height: Int, adjustForSharing: Bool, audioEnabled: Bool, orientaions: [ARInputViewOrientation], queue: DispatchQueue, allowMix: Bool) {
         super.init()
@@ -41,6 +41,11 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
         }
         guard let streamController = streamController else {
             return
+        }
+        do
+        { brbImage = UIImage(data: try Data(contentsOf: brbScreenUrl)) }
+        catch {
+            print("image error")
         }
         if audioEnabled {
             if allowMix {
