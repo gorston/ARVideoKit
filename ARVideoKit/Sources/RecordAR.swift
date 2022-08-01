@@ -6,11 +6,11 @@
 //  Copyright © 2017 Ahmed Fathi Bekhit. All rights reserved.
 //
 
-import UIKit
-import Metal
 import ARKit
+import Metal
 import Photos
 import PhotosUI
+import UIKit
 
 /**
  This class renders the `ARSCNView` or `ARSKView` content with the device's camera stream to generate a video 📹, photo 🌄, live photo 🎇 or GIF 🎆.
@@ -23,34 +23,34 @@ import PhotosUI
  */
 @available(iOS 14.0, *)
 @objc public class RecordAR: ARView {
-    //MARK: - Public objects to configure RecordAR
+    // MARK: - Public objects to configure RecordAR
+
     /**
      An object that passes the AR recorder errors and status in the protocol methods.
      */
-    @objc weak public var delegate: RecordARDelegate?
+    @objc public weak var delegate: RecordARDelegate?
     /**
      An object that passes the AR rendered content in the protocol method.
      */
-    @objc weak public var renderAR: RenderARDelegate?
+    @objc public weak var renderAR: RenderARDelegate?
     /**
      An object that returns the AR recorder current status.
      */
-    @objc public internal(set)var status: RecordARStatus = .unknown
+    @objc public internal(set) var status: RecordARStatus = .unknown
     /**
      An object that returns the current Microphone status.
      */
-    @objc public internal(set)var micStatus: RecordARMicrophoneStatus = .unknown
+    @objc public internal(set) var micStatus: RecordARMicrophoneStatus = .unknown
     
-   
     /**
      An object that allow customizing when to ask for Microphone permission, if needed. Default is `.manual`.
      */
     @objc public var requestMicPermission: RecordARMicrophonePermission = .manual {
         didSet {
-            switch self.requestMicPermission {
+            switch requestMicPermission {
             case .auto:
-                if self.enableAudio {
-                    self.requestMicrophonePermission()
+                if enableAudio {
+                    requestMicrophonePermission()
                 }
             case .manual:
                 break
@@ -58,7 +58,6 @@ import PhotosUI
         }
     }
    
-    
     @objc public var recordStreamSettrings: RecordStreamSettings = .streamOnly
     /**
      An object that allow customizing the video frame per second rate. Default is `.auto`.
@@ -73,30 +72,30 @@ import PhotosUI
      */
     @objc public var contentMode: ARFrameMode = .auto
     
-    
+    @objc public var brbImage: UIImage = .init(named: "")!
     
     /**
      A boolean that enables or disables AR content rendering before recording for image & video processing. Default is `true`.
      */
     @objc public var onlyRenderWhileRecording: Bool = true {
         didSet {
-            self.onlyRenderWhileRec = self.onlyRenderWhileRecording
+            onlyRenderWhileRec = onlyRenderWhileRecording
         }
     }
+
     /**
      A boolean that enables or disables audio recording. Default is `true`.
      */
     @objc public var enableAudio: Bool = true {
         didSet {
-            self.requestMicPermission = (self.requestMicPermission == .manual) ? .manual: .auto
-            self.writer?.audioEnabled = self.enableAudio
+            requestMicPermission = (requestMicPermission == .manual) ? .manual : .auto
+            writer?.audioEnabled = enableAudio
         }
     }
     
     @objc public var isBrbOn: Bool = false {
         didSet {
-            
-            self.writer?.isBrbOn = self.isBrbOn
+            writer?.isBrbOn = isBrbOn
         }
     }
     
@@ -120,12 +119,13 @@ import PhotosUI
      A boolean that enables or disables using envronment light rendering. Default is `false`.
      */
     @objc public var enableAdjustEnvironmentLighting: Bool = false {
-        didSet{
-            if (renderEngine != nil) {
+        didSet {
+            if renderEngine != nil {
                 renderEngine.autoenablesDefaultLighting = enableAdjustEnvironmentLighting
             }
         }
     }
+
     /**
      A boolean that indicates whether render engine should retain SCNTechnique used in the view. Default is `false`.
      */
@@ -142,7 +142,8 @@ import PhotosUI
         }
     }
     
-    //MARK: - Public initialization methods
+    // MARK: - Public initialization methods
+
     /**
      Initialize 🌞🍳 `RecordAR` with an `ARSCNView` 🚀.
      */
@@ -174,17 +175,20 @@ import PhotosUI
         setup()
     }
 
-    //MARK: - Deinit
+    // MARK: - Deinit
+
     deinit {
         gpuLoop.invalidate()
     }
     
-    //MARK: - threads
-    let writerQueue = DispatchQueue(label:"com.ahmedbekhit.WriterQueue")
+    // MARK: - threads
+
+    let writerQueue = DispatchQueue(label: "com.ahmedbekhit.WriterQueue")
     let gifWriterQueue = DispatchQueue(label: "com.ahmedbekhit.GIFWriterQueue", attributes: .concurrent)
     let audioSessionQueue = DispatchQueue(label: "com.ahmedbekhit.AudioSessionQueue", attributes: .concurrent)
     
-    //MARK: - Objects
+    // MARK: - Objects
+
     private var view: Any?
     private var renderEngine: SCNRenderer!
     private var gpuLoop: CADisplayLink!
@@ -205,9 +209,9 @@ import PhotosUI
         return nil
     }
     
-    //Used for gif capturing
-    var gifImages:[UIImage] = []
-    //Used for checking current recorder status
+    // Used for gif capturing
+    var gifImages: [UIImage] = []
+    // Used for checking current recorder status
     var isCapturingPhoto = false
     var isRecordingGIF = false
     var isRecording = false
@@ -215,16 +219,16 @@ import PhotosUI
     var backFromPause = false
     var recordingWithLimit = false
     var onlyRenderWhileRec = true
-    //Used to modify video time when paused
+    // Used to modify video time when paused
     var pausedFrameTime: CMTime?
     var resumeFrameTime: CMTime?
-    //Used to locate the path of the video recording
+    // Used to locate the path of the video recording
     var currentVideoPath: URL?
-    //Used to locate the path of the audio recording
+    // Used to locate the path of the audio recording
     var currentAudioPath: URL?
-    //Used to initialize the video writer
+    // Used to initialize the video writer
     var writer: WritAR?
-    //Used to generate a new video path
+    // Used to generate a new video path
     var newVideoPath: URL {
         let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
         let documentsDirectory = paths[0]
@@ -240,7 +244,8 @@ import PhotosUI
         return URL(fileURLWithPath: vidPath, isDirectory: false)
     }
     
-    //MARK: - Video Setup
+    // MARK: - Video Setup
+
     func setup() {
         if let view = view as? ARSCNView {
             guard let mtlDevice = MTLCreateSystemDefaultDevice() else {
@@ -303,10 +308,7 @@ import PhotosUI
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
     }
     
-    
-
-
-    //MARK: - Public methods for capturing videos, photos, Live Photos, and GIFs
+    // MARK: - Public methods for capturing videos, photos, Live Photos, and GIFs
 
     /// A method that renders a photo 🌄 and returns it as `UIImage`.
     @objc public func photo() -> UIImage {
@@ -315,6 +317,7 @@ import PhotosUI
         }
         return UIImage()
     }
+
     /**
      A method that renders a `PHLivePhoto` 🎇 and returns `PHLivePhotoPlus` in the completion handler.
      
@@ -337,10 +340,10 @@ import PhotosUI
         A boolean that returns `true` when a `PHLivePhotoPlus` is successfully exported to the Photo Library. Otherwise, it returns `false`.
      */
     @objc public func livePhoto(export: Bool, _ finished: ((_ status: Bool, _ livePhoto: PHLivePhotoPlus, _ permissionStatus: PHAuthorizationStatus, _ exported: Bool) -> Swift.Void)? = nil) {
-        self.record(forDuration: 3.0) { path in
+        record(forDuration: 3.0) { path in
             let generator: LivePhotoGenerator? = LivePhotoGenerator()
-            generator?.generate(livePhoto: path) { success, photo, frames, keyFrame in
-                if success && export {
+            generator?.generate(livePhoto: path) { success, photo, _, _ in
+                if success, export {
                     if self.fileCount == 0 {
                         self.fileCount += 1
                         self.export(live: photo!) { done, status in
@@ -353,6 +356,7 @@ import PhotosUI
             }
         }
     }
+
     /**
      A method that generates a GIF 🎆 image and returns its local path (`URL`) in the completion handler.
      
@@ -400,10 +404,11 @@ import PhotosUI
             }
         }
     }
-    ///A method that starts or resumes ⏯ recording a video 📹.
+
+    /// A method that starts or resumes ⏯ recording a video 📹.
     @objc public func record() {
         writerQueue.sync {
-            if self.enableAudio && micStatus == .unknown {
+            if self.enableAudio, micStatus == .unknown {
                 self.requestMicrophonePermission { _ in
                     self.isRecording = true
                     self.status = .recording
@@ -414,6 +419,7 @@ import PhotosUI
             }
         }
     }
+
     /**
      A method that starts recording a video 📹 with a specified duration ⏳ in seconds.
      
@@ -430,7 +436,7 @@ import PhotosUI
      */
     @objc public func record(forDuration duration: TimeInterval, _ finished: ((_ videoPath: URL) -> Swift.Void)? = nil) {
         writerQueue.sync {
-            if self.enableAudio && micStatus == .unknown {
+            if self.enableAudio, micStatus == .unknown {
                 self.requestMicrophonePermission { _ in
                     self.recordingWithLimit = true
                     self.isRecording = true
@@ -451,9 +457,9 @@ import PhotosUI
                     }
                 }
             }
-
         }
     }
+
     /**
      A method that pauses recording a video ⏸📹.
      
@@ -468,6 +474,7 @@ import PhotosUI
             logAR.message("NOT PERMITTED: The [ pause() ] method CAN NOT be used while using [ record(forDuration duration: TimeInterval) ]")
         }
     }
+
     /**
      A method that stops ⏹ recording a video 📹 and exports it to the Photo Library 📲💾.
      
@@ -510,6 +517,7 @@ import PhotosUI
             }
         }
     }
+
     /**
      A method that stops ⏹ recording a video 📹 and returns the video path in the completion handler.
      
@@ -520,7 +528,7 @@ import PhotosUI
         `videoPath`
         A `URL` object that contains the local file path of the video to allow manual exporting or preview of the video.
      */
-    @objc public func stop(_ finished:((_ videoPath: URL) -> Swift.Void)? = nil) {
+    @objc public func stop(_ finished: ((_ videoPath: URL) -> Swift.Void)? = nil) {
         writerQueue.sync {
             isRecording = false
             adjustPausedTime = false
@@ -577,7 +585,6 @@ import PhotosUI
         }
     }
     
-    
     /**
      A method that exports a video 📹 file path to the Photo Library 📲💾.
      
@@ -597,15 +604,15 @@ import PhotosUI
         audioSessionQueue.async {
             let status = PHPhotoLibrary.authorizationStatus()
             if status == .notDetermined {
-                PHPhotoLibrary.requestAuthorization() { status in
+                PHPhotoLibrary.requestAuthorization { _ in
                     // Recursive call after authorization request
                     self.export(video: path, finished)
                 }
             } else if status == .authorized {
                 PHPhotoLibrary.shared().performChanges({
                     PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: path)
-                }) { saved, error in
-                    if saved && self.deleteCacheWhenExported {
+                }) { saved, _ in
+                    if saved, self.deleteCacheWhenExported {
                         logAR.remove(from: path)
                     }
                     finished?(saved, status)
@@ -615,6 +622,7 @@ import PhotosUI
             }
         }
     }
+
     /**
      A method that exports any image 🌄/🎆 (including gif, jpeg, and png) to the Photo Library 📲💾.
      
@@ -633,7 +641,7 @@ import PhotosUI
     @objc public func export(image path: URL? = nil, UIImage: UIImage? = nil, _ finished: ((_ exported: Bool, _ permissionStatus: PHAuthorizationStatus) -> Void)? = nil) {
         let status = PHPhotoLibrary.authorizationStatus()
         if status == .notDetermined {
-            PHPhotoLibrary.requestAuthorization() { status in
+            PHPhotoLibrary.requestAuthorization { _ in
                 // Recursive call after authorization request
                 self.export(image: path, UIImage: UIImage, finished)
             }
@@ -644,8 +652,8 @@ import PhotosUI
                 } else if let image = UIImage {
                     PHAssetChangeRequest.creationRequestForAsset(from: image)
                 }
-            }) { saved, error in
-                if saved && self.deleteCacheWhenExported {
+            }) { saved, _ in
+                if saved, self.deleteCacheWhenExported {
                     if let path = path {
                         logAR.remove(from: path)
                     }
@@ -656,6 +664,7 @@ import PhotosUI
             finished?(false, status)
         }
     }
+
     /**
      A method that exports a `PHLivePhotoPlus` 🎇 object to the Photo Library 📲💾.
      
@@ -683,7 +692,7 @@ import PhotosUI
         
         let status = PHPhotoLibrary.authorizationStatus()
         if status == .notDetermined {
-            PHPhotoLibrary.requestAuthorization() { status in
+            PHPhotoLibrary.requestAuthorization { _ in
                 // Recursive call after authorization request
                 self.export(live: photo, finished)
             }
@@ -693,7 +702,7 @@ import PhotosUI
                 let options = PHAssetResourceCreationOptions()
                 request.addResource(with: .photo, fileURL: keyPhotoPath, options: options)
                 request.addResource(with: .pairedVideo, fileURL: videoPath, options: options)
-            }) { saved, error  in
+            }) { saved, error in
                 if saved {
                     if self.deleteCacheWhenExported {
                         logAR.remove(from: keyPhotoPath)
@@ -720,34 +729,35 @@ import PhotosUI
      A boolean that returns `true` when a the Microphone access is permitted. Otherwise, it returns `false`.
      */
     @objc public func requestMicrophonePermission(_ finished: ((_ status: Bool) -> Swift.Void)? = nil) {
-        AVAudioSession.sharedInstance().requestRecordPermission({ permitted in
+        AVAudioSession.sharedInstance().requestRecordPermission { permitted in
             finished?(permitted)
             if permitted {
                 self.micStatus = .enabled
             } else {
                 self.micStatus = .disabled
             }
-        })
+        }
     }
 }
 
-//MARK: - Public methods for setting up UIViewController orientations
+// MARK: - Public methods for setting up UIViewController orientations
+
 @available(iOS 14.0, *)
 @objc public extension RecordAR {
     /**
-     A method that prepares the video recorder with `ARConfiguration` 📝.
+      A method that prepares the video recorder with `ARConfiguration` 📝.
      
-     Recommended to use in the `UIViewController`'s method `func viewWillAppear(_ animated: Bool)`
-     - parameter configuration: An object that defines motion and scene tracking behaviors for the session.
-    */
-    @objc func prepare(_ configuration: ARConfiguration? = nil) {
+      Recommended to use in the `UIViewController`'s method `func viewWillAppear(_ animated: Bool)`
+      - parameter configuration: An object that defines motion and scene tracking behaviors for the session.
+     */
+    func prepare(_ configuration: ARConfiguration? = nil) {
         renderer.ARcontentMode = contentMode
         onlyRenderWhileRec = onlyRenderWhileRecording
         if let view = view as? ARSCNView {
             UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
             ViewAR.orientation = .portrait
             
-            //try resetting anchors for the initial landscape orientation issue.
+            // try resetting anchors for the initial landscape orientation issue.
             guard let config = configuration else { return }
             view.session.run(config)
         } else if let view = view as? ARSKView {
@@ -760,22 +770,24 @@ import PhotosUI
             ViewAR.orientation = .portrait
         }
     }
+
     /**
-     A method that switches off the orientation lock used in a `UIViewController` with AR scenes 📐😴.
+      A method that switches off the orientation lock used in a `UIViewController` with AR scenes 📐😴.
      
-     Recommended to use in the `UIViewController`'s method `func viewWillDisappear(_ animated: Bool)`.
-    */
-    @objc func rest() {
+      Recommended to use in the `UIViewController`'s method `func viewWillDisappear(_ animated: Bool)`.
+     */
+    func rest() {
         ViewAR.orientation = UIInterfaceOrientationMask(ViewAR.orientations)
     }
 }
 
-//MARK: - AR Video Frames Rendering
+// MARK: - AR Video Frames Rendering
+
 @available(iOS 14.0, *)
 extension RecordAR {
     @objc func renderFrame() {
-        //frame rendering
-        if self.onlyRenderWhileRec && !isRecording && !isRecordingGIF { return }
+        // frame rendering
+        if onlyRenderWhileRec, !isRecording, !isRecordingGIF { return }
 
         renderer.ARcontentMode = contentMode
 
@@ -789,20 +801,19 @@ extension RecordAR {
             return
         }
 
-        self.writerQueue.sync {
-            
+        writerQueue.sync {
             var time: CMTime { return CMTime(seconds: renderer.time, preferredTimescale: 1000000) }
             
             self.renderAR?.frame(didRender: buffer, with: time, using: rawBuffer)
 
-            //gif images writing
+            // gif images writing
             if self.isRecordingGIF {
                 self.gifWriterQueue.sync {
                     self.gifImages.append(self.imageFromBuffer(buffer: buffer))
                 }
             }
             
-            //frame writing
+            // frame writing
             if self.isRecording {
                 if let frameWriter = self.writer {
                     var finalFrameTime: CMTime?
@@ -810,9 +821,9 @@ extension RecordAR {
                         if self.resumeFrameTime == nil {
                             self.resumeFrameTime = time
                         }
-                        //Formula: (currentTime - (timeWhenResume - timeWhenPaused))
+                        // Formula: (currentTime - (timeWhenResume - timeWhenPaused))
                         guard let resumeTime = self.resumeFrameTime,
-                            let pausedTime = self.pausedFrameTime else { return }
+                              let pausedTime = self.pausedFrameTime else { return }
                         finalFrameTime = self.adjustTime(current: time, resume: resumeTime, pause: pausedTime)
                     } else {
                         finalFrameTime = time
@@ -835,13 +846,14 @@ extension RecordAR {
                     self.writer?.videoInputOrientation = self.videoOrientation
                     self.writer?.recordStreamSettrings = self.recordStreamSettrings
                     self.writer?.delegate = self.delegate
+                    self.writer?.brbImage = self.brbImage
                 }
-            } else if !self.isRecording && self.adjustPausedTime {
+            } else if !self.isRecording, self.adjustPausedTime {
                 writer?.pause()
 
                 self.adjustPausedTime = false
                 
-                if self.pausedFrameTime != nil && self.resumeFrameTime != nil {
+                if self.pausedFrameTime != nil, self.resumeFrameTime != nil {
                     self.pausedFrameTime = self.adjustTime(current: time,
                                                            resume: self.resumeFrameTime!,
                                                            pause: self.pausedFrameTime!)
