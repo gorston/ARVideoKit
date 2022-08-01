@@ -72,7 +72,7 @@ import UIKit
      */
     @objc public var contentMode: ARFrameMode = .auto
     
-    @objc public var brbImage: UIImage = .init(named: "")!
+    @objc public var brbImage: UIImage?
     
     /**
      A boolean that enables or disables AR content rendering before recording for image & video processing. Default is `true`.
