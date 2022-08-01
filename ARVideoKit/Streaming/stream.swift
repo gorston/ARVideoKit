@@ -66,6 +66,8 @@ public final class StreamController: ObservableObject {
     
     var bitrate = 3000
 
+
+    
     public func config() {
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.orientation = .landscapeRight
@@ -203,7 +205,6 @@ public final class StreamController: ObservableObject {
         // sharedObject!.connect(rtmpConnection)
         case RTMPConnection.Code.connectFailed.rawValue, RTMPConnection.Code.connectClosed.rawValue:
             guard retryCount <= maxRetryCount else {
-                print("disconnect pizda")
                 return
             }
             Thread.sleep(forTimeInterval: pow(2.0, Double(retryCount)))
