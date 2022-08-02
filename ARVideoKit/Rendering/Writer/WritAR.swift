@@ -224,14 +224,22 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
     var isBrbOn = false
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        print("audioEnabled" + audioEnabled.description)
-        if let input = audioInput, audioEnabled {
+//        print("audioEnabled" + audioEnabled.description)
+        if let input = audioInput {
             audioBufferQueue.async { [weak self] in
                 if let isRecording = self?.isRecording,
                    let session = self?.session,
                    input.isReadyForMoreMediaData, isRecording,
                    session.isRunning
                 {
+                    guard let audioEnabled = self?.audioEnabled else {
+                        return
+                    }
+                    if !audioEnabled {
+                        do {
+                            try sampleBuffer.dataBuffer?.fillDataBytes(with: 0)
+                        } catch {}
+                    }
                     switch self?.recordStreamSettrings {
                     case .videoOnly:
                         input.append(sampleBuffer)
