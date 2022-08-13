@@ -98,6 +98,12 @@ import UIKit
         }
     }
     
+    @objc public var brbImage: UIImage = UIImage() {
+        didSet {
+            writer?.brbImage = brbImage
+        }
+    }
+    
     /**
      A boolean that enables or disables audio `mixWithOthers` if audio recording is enabled. This allows playing music and recording audio at the same time. Default is `true`.
      */
