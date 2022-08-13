@@ -31,7 +31,7 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
     var brbImage: UIImage?
 //    let brbScreenUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("brb.jpg")
     
-    init(output: URL, width: Int, height: Int, adjustForSharing: Bool, audioEnabled: Bool, orientaions: [ARInputViewOrientation], queue: DispatchQueue, allowMix: Bool, brbImageData: Data?) {
+    init(output: URL, width: Int, height: Int, adjustForSharing: Bool, audioEnabled: Bool, orientaions: [ARInputViewOrientation], queue: DispatchQueue, allowMix: Bool) {
         super.init()
         do {
             assetWriter = try AVAssetWriter(outputURL: output, fileType: AVFileType.mp4)
@@ -42,9 +42,7 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
         guard let streamController = streamController else {
             return
         }
-        guard let brbImageData = brbImageData else { return }
-        brbImage = UIImage(data: brbImageData)
-       
+        
         if audioEnabled {
             if allowMix {
                 let audioOptions: AVAudioSession.CategoryOptions = [.mixWithOthers, .allowBluetooth, .defaultToSpeaker, .interruptSpokenAudioAndMixWithOthers]

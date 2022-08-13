@@ -71,8 +71,7 @@ import UIKit
      An object that allow customizing the AR content mode. Default is `.auto`.
      */
     @objc public var contentMode: ARFrameMode = .auto
-    
-    @objc public var brbImageData: Data?
+
     
     /**
      A boolean that enables or disables AR content rendering before recording for image & video processing. Default is `true`.
@@ -842,7 +841,7 @@ extension RecordAR {
                 } else {
                     self.currentVideoPath = self.newVideoPath
                     
-                    self.writer = WritAR(output: self.currentVideoPath!, width: Int(size.width), height: Int(size.height), adjustForSharing: self.adjustVideoForSharing, audioEnabled: self.enableAudio, orientaions: self.inputViewOrientations, queue: self.writerQueue, allowMix: self.enableMixWithOthers,brbImageData: self.brbImageData)
+                    self.writer = WritAR(output: self.currentVideoPath!, width: Int(size.width), height: Int(size.height), adjustForSharing: self.adjustVideoForSharing, audioEnabled: self.enableAudio, orientaions: self.inputViewOrientations, queue: self.writerQueue, allowMix: self.enableMixWithOthers)
                     self.writer?.videoInputOrientation = self.videoOrientation
                     self.writer?.recordStreamSettrings = self.recordStreamSettrings
                     self.writer?.delegate = self.delegate
