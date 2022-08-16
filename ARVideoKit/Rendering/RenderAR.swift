@@ -6,8 +6,8 @@
 //  Copyright © 2018 Ahmed Fathit Bekhit. All rights reserved.
 //
 
-import Foundation
 import ARKit
+import Foundation
 
 @available(iOS 13.0, *)
 struct RenderAR {
@@ -22,7 +22,7 @@ struct RenderAR {
     }
     
     let pixelsQueue = DispatchQueue(label: "com.ahmedbekhit.PixelsQueue", attributes: .concurrent)
-    var time: CFTimeInterval { return CACurrentMediaTime()}
+    var time: CFTimeInterval { return CACurrentMediaTime() }
     var rawBuffer: CVPixelBuffer? {
         if let view = view as? ARSCNView {
             guard let rawBuffer = view.session.currentFrame?.capturedImage else { return nil }
@@ -38,8 +38,8 @@ struct RenderAR {
     
     var bufferSize: CGSize? {
         guard let raw = rawBuffer else { return nil }
-        var width = CVPixelBufferGetWidth(raw)
-        var height = CVPixelBufferGetHeight(raw)
+        var width = 1280
+        var height = 720
         
         if let contentMode = ARcontentMode {
             switch contentMode {
@@ -90,7 +90,7 @@ struct RenderAR {
     var buffer: CVPixelBuffer? {
         if view is ARSCNView {
             guard let size = bufferSize else { return nil }
-            //UIScreen.main.bounds.size
+            // UIScreen.main.bounds.size
             var renderedFrame: UIImage?
 
             pixelsQueue.sync {
@@ -112,7 +112,7 @@ struct RenderAR {
                 renderedFrame = renderEngine.snapshot(atTime: time, with: size, antialiasingMode: .none).rotate(by: 180)
             }
             guard let buffer = renderedFrame!.buffer else { return nil }
-            return buffer;
+            return buffer
         } else if view is SCNView {
             let size = UIScreen.main.bounds.size
             var renderedFrame: UIImage?
