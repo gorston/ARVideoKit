@@ -38,8 +38,8 @@ struct RenderAR {
     
     var bufferSize: CGSize? {
         guard let raw = rawBuffer else { return nil }
-        var width = 270
-        var height = 480
+        var width = 480
+        var height = 270
         
         if let contentMode = ARcontentMode {
             switch contentMode {
