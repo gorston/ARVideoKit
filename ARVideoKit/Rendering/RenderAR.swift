@@ -49,8 +49,8 @@ struct RenderAR {
                     height = Int(UIScreen.main.nativeBounds.height)
                 }
             case .aspectFit:
-                width = CVPixelBufferGetWidth(raw)
-                height = CVPixelBufferGetHeight(raw)
+                width = 1280
+                height = 720
             case .aspectFill:
                 width = Int(UIScreen.main.nativeBounds.width)
                 height = Int(UIScreen.main.nativeBounds.height)
