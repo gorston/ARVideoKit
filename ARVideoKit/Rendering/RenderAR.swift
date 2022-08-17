@@ -38,8 +38,8 @@ struct RenderAR {
     
     var bufferSize: CGSize? {
         guard let raw = rawBuffer else { return nil }
-        var width = 480
-        var height = 270
+        var width = CVPixelBufferGetWidth(raw)
+        var height = CVPixelBufferGetHeight(raw)
         
         if let contentMode = ARcontentMode {
             switch contentMode {
@@ -49,8 +49,8 @@ struct RenderAR {
                     height = Int(UIScreen.main.nativeBounds.height)
                 }
             case .aspectFit:
-                width = 1280
-                height = 720
+                width = CVPixelBufferGetWidth(raw)
+                height = CVPixelBufferGetHeight(raw)
             case .aspectFill:
                 width = Int(UIScreen.main.nativeBounds.width)
                 height = Int(UIScreen.main.nativeBounds.height)

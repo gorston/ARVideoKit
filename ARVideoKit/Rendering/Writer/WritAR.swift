@@ -315,11 +315,11 @@ private extension WritAR {
                 
                 streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
-                guard let newBuffer = rotate(buffer) else {
-                    return
-                }
+//                guard let newBuffer = rotate(buffer) else {
+//                    return
+//                }
             
-                guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+                guard let newSample = createVideoSampleBufferWithPixelBuffer(buffer, presentationTime: time) else {
                     return
                 }
             
@@ -340,11 +340,11 @@ private extension WritAR {
                 streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
                 pixelBufferInput.append(buffer, withPresentationTime: time)
-                guard let newBuffer = rotate(buffer) else {
-                    return
-                }
+//                guard let newBuffer = rotate(buffer) else {
+//                    return
+//                }
             
-                guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+                guard let newSample = createVideoSampleBufferWithPixelBuffer(buffer, presentationTime: time) else {
                     return
                 }
             
