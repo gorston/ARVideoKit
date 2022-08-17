@@ -22,6 +22,8 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
     private var audioSettings: [String: Any]?
 
     let audioBufferQueue = DispatchQueue(label: "com.ahmedbekhit.AudioBufferQueue")
+    
+    let videoBufferQueue = DispatchQueue(label: "com.ahmedbekhit.VideoBufferQueue")
 
     private var isRecording: Bool = false
     let streamController = globalStreamController
@@ -42,7 +44,7 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
         guard let streamController = streamController else {
             return
         }
-        
+        streamController.rtmpStream.orientation = .landscapeRight
         if audioEnabled {
             if allowMix {
                 let audioOptions: AVAudioSession.CategoryOptions = [.mixWithOthers, .allowBluetooth, .defaultToSpeaker, .interruptSpokenAudioAndMixWithOthers]
@@ -311,21 +313,23 @@ private extension WritAR {
                 guard let pixelBuffer = brbImage?.createVideoSampleBufferWithPixelBuffer((brbImage?.cvPixelBuffer)!, presentationTime: time) else {
                     return
                 }
-                streamController.rtmpStream.orientation = .landscapeRight
+                
                 
                 streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
-//                guard let newBuffer = rotate(buffer) else {
-//                    return
-//                }
-            
-                guard let newSample = createVideoSampleBufferWithPixelBuffer(buffer, presentationTime: time) else {
-                    return
+                videoBufferQueue.sync {
+                    guard let newBuffer = rotate(buffer) else {
+                        return
+                    }
+                
+                    guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+                        return
+                    }
+                
+                    
+                
+                    streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
                 }
-            
-                streamController.rtmpStream.orientation = .landscapeRight
-            
-                streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
             }
         case .both:
             guard let streamController = streamController else {
@@ -335,22 +339,26 @@ private extension WritAR {
                 guard let pixelBuffer = brbImage?.createVideoSampleBufferWithPixelBuffer((brbImage?.cvPixelBuffer)!, presentationTime: time) else {
                     return
                 }
-                streamController.rtmpStream.orientation = .landscapeRight
+               
                 
                 streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
                 pixelBufferInput.append(buffer, withPresentationTime: time)
-//                guard let newBuffer = rotate(buffer) else {
-//                    return
-//                }
-            
-                guard let newSample = createVideoSampleBufferWithPixelBuffer(buffer, presentationTime: time) else {
-                    return
+                
+                videoBufferQueue.sync {
+                    guard let newBuffer = rotate(buffer) else {
+                        return
+                    }
+                
+                    guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
+                        return
+                    }
+                
+                   
+                
+                    streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
                 }
-            
-                streamController.rtmpStream.orientation = .landscapeRight
-            
-                streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
+              
             }
         }
     }
