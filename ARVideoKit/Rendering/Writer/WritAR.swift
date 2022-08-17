@@ -314,19 +314,16 @@ private extension WritAR {
                     return
                 }
                 
-                
                 streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
                 videoBufferQueue.sync {
-                    guard let newBuffer = rotate(buffer) else {
+//                    guard let newBuffer = rotate(buffer) else {
+//                        return
+//                    }
+                
+                    guard let newSample = createVideoSampleBufferWithPixelBuffer(buffer, presentationTime: time) else {
                         return
                     }
-                
-                    guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
-                        return
-                    }
-                
-                    
                 
                     streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
                 }
@@ -340,25 +337,21 @@ private extension WritAR {
                     return
                 }
                
-                
                 streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
                 pixelBufferInput.append(buffer, withPresentationTime: time)
                 
                 videoBufferQueue.sync {
-                    guard let newBuffer = rotate(buffer) else {
+//                    guard let newBuffer = rotate(buffer) else {
+//                        return
+//                    }
+                
+                    guard let newSample = createVideoSampleBufferWithPixelBuffer(buffer, presentationTime: time) else {
                         return
                     }
-                
-                    guard let newSample = createVideoSampleBufferWithPixelBuffer(newBuffer, presentationTime: time) else {
-                        return
-                    }
-                
-                   
                 
                     streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
                 }
-              
             }
         }
     }
