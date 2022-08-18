@@ -339,9 +339,8 @@ private extension WritAR {
                
                 streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
-                pixelBufferInput.append(buffer, withPresentationTime: time)
-                
                 videoBufferQueue.sync {
+                    pixelBufferInput.append(buffer, withPresentationTime: time)
 //                    guard let newBuffer = rotate(buffer) else {
 //                        return
 //                    }
