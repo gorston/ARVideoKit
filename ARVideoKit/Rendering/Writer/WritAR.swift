@@ -347,10 +347,10 @@ private extension WritAR {
                 
                     guard let newSample = createVideoSampleBufferWithPixelBuffer(buffer, presentationTime: time) else {
                         return
-                    
+                    }
                 
                     streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
-                }
+                
             }
         }
     }
