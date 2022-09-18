@@ -23,7 +23,7 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
 
     let audioBufferQueue = DispatchQueue(label: "com.ahmedbekhit.AudioBufferQueue")
     
-    let videoBufferQueue = DispatchQueue(label: "com.ahmedbekhit.VideoBufferQueue")
+
 
     private var isRecording: Bool = false
     let streamController = globalStreamController
@@ -316,7 +316,7 @@ private extension WritAR {
                 
                 streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
-                videoBufferQueue.sync {
+                
 //                    guard let newBuffer = rotate(buffer) else {
 //                        return
 //                    }
@@ -326,7 +326,7 @@ private extension WritAR {
                     }
                 
                     streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
-                }
+                
             }
         case .both:
             guard let streamController = streamController else {
@@ -339,7 +339,7 @@ private extension WritAR {
                
                 streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
-                videoBufferQueue.sync {
+                
                     pixelBufferInput.append(buffer, withPresentationTime: time)
 //                    guard let newBuffer = rotate(buffer) else {
 //                        return
@@ -347,7 +347,7 @@ private extension WritAR {
                 
                     guard let newSample = createVideoSampleBufferWithPixelBuffer(buffer, presentationTime: time) else {
                         return
-                    }
+                    
                 
                     streamController.rtmpStream.appendSampleBuffer(newSample, withType: .video)
                 }
