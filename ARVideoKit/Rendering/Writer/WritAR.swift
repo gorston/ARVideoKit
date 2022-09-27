@@ -209,11 +209,12 @@ class WritAR: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
         }
         
         if videoInput.isReadyForMoreMediaData {
+            if(assetWriter.status == .writing){
             append(pixel: buffer, with: time)
             currentDuration = time.seconds - startingVideoTime!.seconds
             isRecording = true
             isWritingWithoutError = true
-            delegate?.recorder?(didUpdateRecording: currentDuration)
+            delegate?.recorder?(didUpdateRecording: currentDuration)}
         }
     }
 
