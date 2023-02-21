@@ -362,7 +362,7 @@ private extension WritAR {
         guard error == kCVReturnSuccess else {
             return nil
         }
-        let ciImage = CIImage(cvPixelBuffer: sampleBuffer).oriented(.left)
+        let ciImage = CIImage(cvPixelBuffer: sampleBuffer).oriented(.up)
        
         let context = CIContext(options: nil)
        
