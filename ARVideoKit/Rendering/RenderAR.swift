@@ -98,7 +98,7 @@ struct RenderAR {
 //            }
             if let _ = renderedFrame {
             } else {
-                renderedFrame = renderEngine.snapshot(atTime: time, with: size, antialiasingMode: .none).rotate(by: 90,flip: true)
+                renderedFrame = renderEngine.snapshot(atTime: time, with: size, antialiasingMode: .none).rotate(by: 90, flip: false)
             }
             guard let buffer = renderedFrame!.buffer else { return nil }
             return buffer
