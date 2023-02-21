@@ -70,7 +70,7 @@ public final class StreamController: ObservableObject {
     
     public func config() {
         rtmpStream = RTMPStream(connection: rtmpConnection)
-        rtmpStream.orientation = .landscapeRight
+        rtmpStream.orientation = .portrait
         rtmpStream.captureSettings = [
             .sessionPreset: AVCaptureSession.Preset.hd1920x1080,
 
