@@ -302,7 +302,10 @@ private extension WritAR {
         switch recordStreamSettrings {
         case .videoOnly:
             if !isBrbOn {
-                pixelBufferInput.append(buffer, withPresentationTime: time)
+                guard let newBuffer = rotate(buffer) else {
+                    return
+                }
+                pixelBufferInput.append(newBuffer, withPresentationTime: time)
             }
         case .streamOnly:
             guard let streamController = streamController else {
@@ -337,10 +340,10 @@ private extension WritAR {
                
                 streamController.rtmpStream.appendSampleBuffer(pixelBuffer, withType: .video)
             } else {
-                pixelBufferInput.append(buffer, withPresentationTime: time)
-//                    guard let newBuffer = rotate(buffer) else {
-//                        return
-//                    }
+                guard let newBuffer = rotate(buffer) else {
+                    return
+                }
+                pixelBufferInput.append(newBuffer, withPresentationTime: time)
                 
                 guard let newSample = createVideoSampleBufferWithPixelBuffer(buffer, presentationTime: time) else {
                     return
@@ -351,24 +354,24 @@ private extension WritAR {
         }
     }
     
-//    func rotate(_ sampleBuffer: CVPixelBuffer) -> CVPixelBuffer? {
-//        var newPixelBuffer: CVPixelBuffer?
-//        let error = CVPixelBufferCreate(kCFAllocatorDefault,
-//                                        CVPixelBufferGetHeight(sampleBuffer),
-//                                        CVPixelBufferGetWidth(sampleBuffer),
-//                                        kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
-//                                        nil,
-//                                        &newPixelBuffer)
-//        guard error == kCVReturnSuccess else {
-//            return nil
-//        }
-//        let ciImage = CIImage(cvPixelBuffer: sampleBuffer).oriented(.left)
-//
-//        let context = CIContext(options: nil)
-//
-//        context.render(ciImage, to: newPixelBuffer!)
-//        return newPixelBuffer
-//    }
+    func rotate(_ sampleBuffer: CVPixelBuffer) -> CVPixelBuffer? {
+        var newPixelBuffer: CVPixelBuffer?
+        let error = CVPixelBufferCreate(kCFAllocatorDefault,
+                                        CVPixelBufferGetHeight(sampleBuffer),
+                                        CVPixelBufferGetWidth(sampleBuffer),
+                                        kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+                                        nil,
+                                        &newPixelBuffer)
+        guard error == kCVReturnSuccess else {
+            return nil
+        }
+        let ciImage = CIImage(cvPixelBuffer: sampleBuffer).oriented(.left)
+
+        let context = CIContext(options: nil)
+
+        context.render(ciImage, to: newPixelBuffer!)
+        return newPixelBuffer
+    }
     
     private func createVideoSampleBufferWithPixelBuffer(_ pixelBuffer: CVPixelBuffer, presentationTime: CMTime) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
