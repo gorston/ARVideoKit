@@ -31,7 +31,7 @@ struct RenderAR {
             guard let rawBuffer = view.session.currentFrame?.capturedImage else { return nil }
             return rawBuffer
         } else if view is SCNView {
-            return buffer
+            return buffer?.recordBuffer
         }
         return nil
     }
@@ -87,45 +87,31 @@ struct RenderAR {
         }
     }
     
-    var buffer: CVPixelBuffer? {
+    var buffer: RecordStreamBuffers? {
         if view is ARSCNView {
             guard let size = bufferSize else { return nil }
             // UIScreen.main.bounds.size
-            var renderedFrame: UIImage?
+            var renderedStreamFrame: UIImage?
+            var renderedRecordFrame: UIImage?
 
             pixelsQueue.sync {
-                renderedFrame = renderEngine.snapshot(atTime: time, with: size, antialiasingMode: .none).rotate(by: -90, flip: false)
+                var snapshot = renderEngine.snapshot(atTime: time, with: size, antialiasingMode: .none)
+                renderedStreamFrame = snapshot.rotate(by: -90, flip: false)
+                renderedRecordFrame = snapshot
             }
-//            if let _ = renderedFrame {
-//            } else {
-//                renderedFrame = renderEngine.snapshot(atTime: time, with: size, antialiasingMode: .none).rotate(by: -90, flip: false)
-//            }
-            guard let buffer = renderedFrame!.buffer else { return nil }
-            return buffer
-        } else if view is ARSKView {
-            guard let size = bufferSize else { return nil }
-            var renderedFrame: UIImage?
-            pixelsQueue.sync {
-                renderedFrame = renderEngine.snapshot(atTime: self.time, with: size, antialiasingMode: .none).rotate(by: 180)
-            }
-            if renderedFrame == nil {
-                renderedFrame = renderEngine.snapshot(atTime: time, with: size, antialiasingMode: .none).rotate(by: 180)
-            }
-            guard let buffer = renderedFrame!.buffer else { return nil }
-            return buffer
-        } else if view is SCNView {
-            let size = UIScreen.main.bounds.size
-            var renderedFrame: UIImage?
-            pixelsQueue.sync {
-                renderedFrame = renderEngine.snapshot(atTime: self.time, with: size, antialiasingMode: .none)
-            }
-            if let _ = renderedFrame {
-            } else {
-                renderedFrame = renderEngine.snapshot(atTime: time, with: size, antialiasingMode: .none)
-            }
-            guard let buffer = renderedFrame!.buffer else { return nil }
-            return buffer
+            
+            return RecordStreamBuffers(streamBuffer: renderedStreamFrame?.buffer, recordBuffer: renderedRecordFrame?.buffer)
         }
         return nil
+    }
+}
+
+class RecordStreamBuffers{
+    var recordBuffer: CVPixelBuffer?
+    var streamBuffer : CVPixelBuffer?
+    
+    init( streamBuffer: CVPixelBuffer?, recordBuffer: CVPixelBuffer?) {
+        self.recordBuffer = recordBuffer
+        self.streamBuffer = streamBuffer
     }
 }

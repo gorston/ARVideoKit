@@ -316,12 +316,6 @@ import UIKit
     // MARK: - Public methods for capturing videos, photos, Live Photos, and GIFs
 
     /// A method that renders a photo 🌄 and returns it as `UIImage`.
-    @objc public func photo() -> UIImage {
-        if let buffer = renderer.buffer {
-            return imageFromBuffer(buffer: buffer)
-        }
-        return UIImage()
-    }
 
     /**
      A method that renders a `PHLivePhoto` 🎇 and returns `PHLivePhotoPlus` in the completion handler.
@@ -809,12 +803,16 @@ extension RecordAR {
         writerQueue.sync {
             var time: CMTime { return CMTime(seconds: renderer.time, preferredTimescale: 1000000) }
             
-            self.renderAR?.frame(didRender: buffer, with: time, using: rawBuffer)
+            guard let newBuffer = buffer.recordBuffer else {
+                return
+            }
+            
+            self.renderAR?.frame(didRender: newBuffer, with: time, using: rawBuffer)
 
             // gif images writing
             if self.isRecordingGIF {
                 self.gifWriterQueue.sync {
-                    self.gifImages.append(self.imageFromBuffer(buffer: buffer))
+                    self.gifImages.append(self.imageFromBuffer(buffer: newBuffer))
                 }
             }
             
