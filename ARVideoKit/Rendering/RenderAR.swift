@@ -117,7 +117,7 @@ struct RenderAR {
             let size = UIScreen.main.bounds.size
             var renderedFrame: UIImage?
             pixelsQueue.sync {
-                renderedFrame = renderEngine.snapshot(atTime: self.time, with: size, antialiasingMode: .none).rotate(by: -90)
+                renderedFrame = renderEngine.snapshot(atTime: self.time, with: size, antialiasingMode: .none)
             }
             if let _ = renderedFrame {
             } else {
